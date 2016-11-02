@@ -10,6 +10,7 @@ module Fastlane
           UI.message(" password: #{params[:password]}")
           UI.message(" app_identifier: #{params[:app_identifier]}")
           UI.message(" ipa: #{params[:ipa]}")
+          UI.message(" app_name: #{params[:app_name]}")
           UI.message(" author: #{params[:author]}")
           UI.message(" version: #{params[:version]}")
           UI.message(" version_notes: #{params[:version_notes]}")
@@ -20,6 +21,7 @@ module Fastlane
         password = params[:password]
         app_identifier = params[:app_identifier]
         ipa = params[:ipa]
+        app_name = params[:app_name]
         author = params[:author]
         version = params[:version]
         version_notes = params[:version_notes]
@@ -52,7 +54,7 @@ module Fastlane
 
         # step 5: publish app
         UI.message("5. Publish app")
-        result = publish_app(api_url, fileID, token, transactionID, author, version, version_notes)
+        result = publish_app(api_url, fileID, token, transactionID, app_name, author, version, version_notes)
 
         # arr = create_app(api_url, token)
         # if DEBUG 
@@ -208,7 +210,7 @@ module Fastlane
         return transactionID, fileUploadURL
       end
 
-      def self.publish_app(api_url, fileID, token, transactionID, author, version, version_notes)
+      def self.publish_app(api_url, fileID, token, transactionID, app_name, author, version, version_notes)
         require 'net/http'
         require 'uri'
         require 'json'
@@ -224,7 +226,7 @@ module Fastlane
           "params" => {
             "EASEmetadata" => {
               "author" => author,
-              "name" => "app name",
+              "name" => app_name,
               "shortdescription" => "short description",
               "longdescription" => "long description",
               "version" => version,
@@ -311,6 +313,11 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :ipa,
                                   env_name: "APPERIAN_IPA",
                                description: "The path to your IPA file",
+                                  optional: false,
+                                      type: String),
+          FastlaneCore::ConfigItem.new(key: :app_name,
+                                  env_name: "APPERIAN_APP_NAME",
+                               description: "The name of your app",
                                   optional: false,
                                       type: String),
           FastlaneCore::ConfigItem.new(key: :author,
