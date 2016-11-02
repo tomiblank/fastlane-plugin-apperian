@@ -12,6 +12,8 @@ module Fastlane
           UI.message(" ipa: #{params[:ipa]}")
           UI.message(" app_name: #{params[:app_name]}")
           UI.message(" author: #{params[:author]}")
+          UI.message(" short_description: #{params[:short_description]}")
+          UI.message(" long_description: #{params[:long_description]}")
           UI.message(" version: #{params[:version]}")
           UI.message(" version_notes: #{params[:version_notes]}")
         end
@@ -23,6 +25,8 @@ module Fastlane
         ipa = params[:ipa]
         app_name = params[:app_name]
         author = params[:author]
+        short_description = params[:short_description]
+        long_description = params[:long_description]
         version = params[:version]
         version_notes = params[:version_notes]
 
@@ -62,7 +66,7 @@ module Fastlane
 
         # step 5: publish app
         UI.message("5. Publish app")
-        result = publish_app(api_url, fileID, token, transactionID, app_name, author, version, version_notes)
+        result = publish_app(api_url, fileID, token, transactionID, app_name, author, short_description, long_description, version, version_notes)
         
       end
 
@@ -189,7 +193,7 @@ module Fastlane
         return transactionID, fileUploadURL
       end
 
-      def self.publish_app(api_url, fileID, token, transactionID, app_name, author, version, version_notes)
+      def self.publish_app(api_url, fileID, token, transactionID, app_name, author, short_description, long_description, version, version_notes)
         require 'rest-client'
         require 'json'
 
@@ -202,8 +206,8 @@ module Fastlane
             "EASEmetadata" => {
               "author" => author,
               "name" => app_name,
-              "shortdescription" => "short description",
-              "longdescription" => "long description",
+              "shortdescription" => short_description,
+              "longdescription" => long_description,
               "version" => version,
               "versionNotes" => version_notes
             },
@@ -309,6 +313,18 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :version,
                                   env_name: "APPERIAN_VERSION",
                                description: "Version number",
+                                  optional: false,
+                                      type: String),
+
+          FastlaneCore::ConfigItem.new(key: :short_description,
+                                  env_name: "APPERIAN_SHORT_DESCRIPTION",
+                               description: "Short description",
+                                  optional: false,
+                                      type: String),
+
+          FastlaneCore::ConfigItem.new(key: :long_description,
+                                  env_name: "APPERIAN_LONG_DESCRIPTION",
+                               description: "Long description",
                                   optional: false,
                                       type: String),
 
