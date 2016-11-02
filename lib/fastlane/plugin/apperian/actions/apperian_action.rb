@@ -1,7 +1,7 @@
 module Fastlane
   module Actions
     class ApperianAction < Action
-      DEBUG = true
+      DEBUG = false
       def self.run(params)
         if DEBUG
           UI.message("The apperian plugin is working!")
@@ -38,15 +38,23 @@ module Fastlane
           UI.message(appID)
         end
         
+        # step 3: create or update app
         transactionID = ""
         fileUploadURL = ""
-        # step 3a: create app
 
-        # step 3b: update app
-        UI.message("3b. Update app")
-        result = update_app(api_url, appID, token) # return array [0] = transactionID, [1] = fileUploadURL
-        transactionID = result[0]
-        fileUploadURL = result[1]
+        if appID == "" then
+          # step 3a: create app
+          UI.message("3a. Create app")
+          result = create_app(api_url, token) # return array [0] = transactionID, [1] = fileUploadURL
+          transactionID = result[0]
+          fileUploadURL = result[1]
+        else 
+          # step 3b: update app
+          UI.message("3b. Update app")
+          result = update_app(api_url, appID, token) # return array [0] = transactionID, [1] = fileUploadURL
+          transactionID = result[0]
+          fileUploadURL = result[1]
+        end
 
         # step 4: upload file
         UI.message("4. Upload file")
@@ -55,24 +63,15 @@ module Fastlane
         # step 5: publish app
         UI.message("5. Publish app")
         result = publish_app(api_url, fileID, token, transactionID, app_name, author, version, version_notes)
-
-        # arr = create_app(api_url, token)
-        # if DEBUG 
-        #   UI.message(arr)
-        # end
         
       end
 
-      # returns token
-      def self.authenticate(api_url, email, password) 
-        require 'net/http'
-        require 'uri'
+
+      def self.authenticate(api_url, email, password)
+        require 'rest-client'
         require 'json'
 
-        uri = URI.parse(api_url)
-        request = Net::HTTP::Post.new(uri)
-        request.content_type = "application/js"
-        request.body = JSON.dump({
+        body = {
           "id" => 1,
           "apiVersion" => "1.0",
           "jsonrpc" => "2.0",
@@ -81,12 +80,10 @@ module Fastlane
             "email" => email,
             "password" => password
           }
-        })
-
-        response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-          http.request(request)
-        end
-
+        }
+        
+        response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
+        
         if DEBUG 
           UI.message(response.code)
           UI.message(response.body)        
@@ -113,14 +110,10 @@ module Fastlane
       end
 
       def self.list_apps(api_url, token)
-        require 'net/http'
-        require 'uri'
+        require 'rest-client'
         require 'json'
 
-        uri = URI.parse(api_url)
-        request = Net::HTTP::Post.new(uri)
-        request.content_type = "application/js"
-        request.body = JSON.dump({
+        body = {
           "id" => 1,
           "apiVersion" => "1.0",
           "jsonrpc" => "2.0",
@@ -128,11 +121,9 @@ module Fastlane
           "params" => {
             "token" => token
           }
-        })
-
-        response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-          http.request(request)
-        end
+        }
+        
+        response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
         if DEBUG
           UI.message(response.code)
@@ -144,14 +135,10 @@ module Fastlane
       end
 
       def self.create_app(api_url, token)
-        require 'net/http'
-        require 'uri'
+        require 'rest-client'
         require 'json'
 
-        uri = URI.parse(api_url)
-        request = Net::HTTP::Post.new(uri)
-        request.content_type = "application/js"
-        request.body = JSON.dump({
+        body = {
           "id" => 1,
           "apiVersion" => "1.0",
           "jsonrpc" => "2.0",
@@ -159,11 +146,9 @@ module Fastlane
           "params" => {
             "token" => token
           }
-        })
-
-        response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-          http.request(request)
-        end
+        }
+        
+        response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
         if DEBUG
           UI.message(response.code)
@@ -177,14 +162,10 @@ module Fastlane
       end
 
       def self.update_app(api_url, appID, token)
-        require 'net/http'
-        require 'uri'
+        require 'rest-client'
         require 'json'
 
-        uri = URI.parse(api_url)
-        request = Net::HTTP::Post.new(uri)
-        request.content_type = "application/js"
-        request.body = JSON.dump({
+        body = {
           "id" => 1,
           "apiVersion" => "1.0",
           "jsonrpc" => "2.0",
@@ -193,11 +174,9 @@ module Fastlane
             "appID" => appID,
             "token" => token
           }
-        })
-
-        response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-          http.request(request)
-        end
+        }
+        
+        response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
         if DEBUG
           UI.message(response.code)
@@ -211,14 +190,10 @@ module Fastlane
       end
 
       def self.publish_app(api_url, fileID, token, transactionID, app_name, author, version, version_notes)
-        require 'net/http'
-        require 'uri'
+        require 'rest-client'
         require 'json'
 
-        uri = URI.parse(api_url)
-        request = Net::HTTP::Post.new(uri)
-        request.content_type = "application/js"
-        request.body = JSON.dump({
+        body = {
           "id" => 1,
           "apiVersion" => "1.0",
           "jsonrpc" => "2.0",
@@ -238,11 +213,9 @@ module Fastlane
             "token" => token,
             "transactionID" => transactionID
           }
-        })
-
-        response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-          http.request(request)
-        end
+        }
+        
+        response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
         if DEBUG
           UI.message(response.code)
@@ -257,6 +230,7 @@ module Fastlane
 
       def self.upload_file(upload_url, file_path)
         require 'rest-client'
+        require 'json'
 
         response = RestClient.post upload_url, :LUuploadFile => File.new(file_path, 'rb')
 
@@ -295,41 +269,49 @@ module Fastlane
                                description: "The API URL to the Apperian API host",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :email,
                                   env_name: "APPERIAN_EMAIL",
                                description: "Your email address to authenticate yourself with the Apperian API host",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :password,
                                   env_name: "APPERIAN_PASSWORD",
                                description: "Your password to authenticate yourself with the Apperian API host",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :app_identifier,
                                   env_name: "APPERIAN_APP_IDENTIFIER",
                                description: "The identifier of your app",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :ipa,
                                   env_name: "APPERIAN_IPA",
                                description: "The path to your IPA file",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :app_name,
                                   env_name: "APPERIAN_APP_NAME",
                                description: "The name of your app",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :author,
                                   env_name: "APPERIAN_AUTHOR",
                                description: "Author of the app",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :version,
                                   env_name: "APPERIAN_VERSION",
                                description: "Version number",
                                   optional: false,
                                       type: String),
+
           FastlaneCore::ConfigItem.new(key: :version_notes,
                                   env_name: "APPERIAN_VERSION_NOTES",
                                description: "Version notes",
@@ -341,9 +323,8 @@ module Fastlane
       def self.is_supported?(platform)
         # Adjust this if your plugin only works for a particular platform (iOS vs. Android, for example)
         # See: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Platforms.md
-        #
-        # [:ios, :mac, :android].include?(platform)
-        true
+
+        [:ios].include?(platform)
       end
     end
   end
