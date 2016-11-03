@@ -1,10 +1,16 @@
 module Fastlane
   module Actions
     class ApperianAction < Action
-      DEBUG = false
+      $is_debug = false
+
       def self.run(params)
-        if DEBUG
-          UI.message("The apperian plugin is working!")
+        # check if debug is enabled
+        $is_debug = params[:debug]
+
+        if debug
+          UI.message("---------------------------------")
+          UI.message("Apperian plugin debug information")
+          UI.message("---------------------------------")
           UI.message(" api_url: #{params[:api_url]}")
           UI.message(" email: #{params[:email]}")
           UI.message(" password: #{params[:password]}")
@@ -16,6 +22,7 @@ module Fastlane
           UI.message(" long_description: #{params[:long_description]}")
           UI.message(" version: #{params[:version]}")
           UI.message(" version_notes: #{params[:version_notes]}")
+          UI.message("---------------------------------")
         end
 
         api_url = params[:api_url]
@@ -37,7 +44,7 @@ module Fastlane
         # step 2: find app
         UI.message("2. Find app")
         appID = find_app(api_url, app_identifier, token)
-        if DEBUG
+        if debug
           UI.message("Found app:")
           UI.message(appID)
         end
@@ -88,7 +95,7 @@ module Fastlane
         
         response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
         
-        if DEBUG 
+        if debug 
           UI.message(response.code)
           UI.message(response.body)        
         end
@@ -129,7 +136,7 @@ module Fastlane
         
         response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
-        if DEBUG
+        if debug
           UI.message(response.code)
           UI.message(response.body)
         end
@@ -154,7 +161,7 @@ module Fastlane
         
         response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
-        if DEBUG
+        if debug
           UI.message(response.code)
           UI.message(response.body)
         end
@@ -182,7 +189,7 @@ module Fastlane
         
         response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
-        if DEBUG
+        if debug
           UI.message(response.code)
           UI.message(response.body)
         end
@@ -221,7 +228,7 @@ module Fastlane
         
         response = RestClient.post(api_url, body.to_json, {content_type: :json, accept: :json})
 
-        if DEBUG
+        if debug
           UI.message(response.code)
           UI.message(response.body)
         end
@@ -238,7 +245,7 @@ module Fastlane
 
         response = RestClient.post upload_url, :LUuploadFile => File.new(file_path, 'rb')
 
-        if DEBUG
+        if debug
           UI.message(response.code)
           UI.message(response.body)
         end
@@ -350,7 +357,7 @@ module Fastlane
                                       type: String,
                               verify_block: proc do |value|
                                               UI.user_error!("No long description given, pass using `long_description: 'Detailled description of my app'`") unless value and !value.empty?
-                                              UI.user_error!("long_description: maximum characters allowed: 10'000'") unless value.length <= 10000
+                                              UI.user_error!("long_description: maximum characters allowed: 10'000'") unless value.length <= 10000  
                                             end),
 
           FastlaneCore::ConfigItem.new(key: :version,
@@ -371,7 +378,15 @@ module Fastlane
                               verify_block: proc do |value|
                                               UI.user_error!("No version notes given, pass using `version_notes: 'New version available'`") unless value and !value.empty?
                                               UI.user_error!("version_notes: maximum characters allowed: 1500") unless value.length <= 1500
-                                            end)
+                                            end),
+
+          FastlaneCore::ConfigItem.new(key: :debug,
+                                  env_name: "APPERIAN_DEBUG",
+                               description: "Debug flag, set to true to show extended output. default: false",
+                                  optional: true,
+                                 is_string: false,
+                             default_value: false)
+
         ]
       end
 
@@ -381,6 +396,13 @@ module Fastlane
 
         [:ios].include?(platform)
       end
+
+      # helpers
+      
+      def self.debug
+        $is_debug
+      end
+
     end
   end
 end
