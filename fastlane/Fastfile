@@ -1,0 +1,23 @@
+lane :test do
+
+  # available api_url
+  # North America: https://easesvc.apperian.com/ease.interface.php
+  # Europe: https://easesvc.apperian.eu/ease.interface.php
+  # Custom https://path.to/ease.interface.php
+
+  apperian(
+    api_url: "https://easesvc.apperian.com/ease.interface.php", 
+    email: "<your-email>",
+    password: "<your-password>",
+    app_identifier: "com.example.helloworld",
+    ipa: "/path/to/HelloWorld.ipa",
+    app_name: "Hello World",
+    author: "<Author>",
+    short_description: "Short description of your app",
+    long_description: "A detailled description of your app",
+    version: "1.0.0",
+    version_notes: "Notes for this specific version",
+    debug: false # set to true to print out detailled logs
+  )
+  
+end
