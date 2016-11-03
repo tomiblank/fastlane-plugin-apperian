@@ -272,67 +272,106 @@ module Fastlane
                                   env_name: "APPERIAN_API_URL",
                                description: "The API URL to the Apperian API host",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No Apperian API URl given, check https://help.apperian.com/display/pub/Using+the+Publishing+API for options and pass using `api_url: 'https://easesvc.apperian.com/ease.interface.php'`") unless value and !value.empty?
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :email,
                                   env_name: "APPERIAN_EMAIL",
                                description: "Your email address to authenticate yourself with the Apperian API host",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No email for Apperian authentication given, pass using `email: 'me@example.com'`") unless value and !value.empty?
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :password,
                                   env_name: "APPERIAN_PASSWORD",
                                description: "Your password to authenticate yourself with the Apperian API host",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No password for Apperian authentication given, pass using `password: 'secret'`") unless value and !value.empty?
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :app_identifier,
                                   env_name: "APPERIAN_APP_IDENTIFIER",
                                description: "The identifier of your app",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No app identifier given, pass using `app_identifier: 'com.example.app'`") unless value and !value.empty?
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :ipa,
                                   env_name: "APPERIAN_IPA",
                                description: "The path to your IPA file",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("Could not find IPA file, pass using `ipa: '/path/to/file.ipa'`") unless File.exist?(value)
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :app_name,
                                   env_name: "APPERIAN_APP_NAME",
                                description: "The name of your app",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No app name given, pass using `app_name: 'My sample app'`") unless value and !value.empty?
+                                              UI.user_error!("app_name: maximum characters allowed: 30") unless value.length <= 30
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :author,
                                   env_name: "APPERIAN_AUTHOR",
                                description: "Author of the app",
                                   optional: false,
-                                      type: String),
-
-          FastlaneCore::ConfigItem.new(key: :version,
-                                  env_name: "APPERIAN_VERSION",
-                               description: "Version number",
-                                  optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No author given, pass using `author: 'Bob'`") unless value and !value.empty?
+                                              UI.user_error!("author: maximum characters allowed: 150") unless value.length <= 150
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :short_description,
                                   env_name: "APPERIAN_SHORT_DESCRIPTION",
                                description: "Short description",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No short description given, pass using `short_description: 'This is what my app does'`") unless value and !value.empty?
+                                              UI.user_error!("short_description: maximum characters allowed: 100") unless value.length <= 100
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :long_description,
                                   env_name: "APPERIAN_LONG_DESCRIPTION",
                                description: "Long description",
                                   optional: false,
-                                      type: String),
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No long description given, pass using `long_description: 'Detailled description of my app'`") unless value and !value.empty?
+                                              UI.user_error!("long_description: maximum characters allowed: 10'000'") unless value.length <= 10000
+                                            end),
+
+          FastlaneCore::ConfigItem.new(key: :version,
+                                  env_name: "APPERIAN_VERSION",
+                               description: "Version number",
+                                  optional: false,
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No version given, pass using `version: '1.0.2'`") unless value and !value.empty?
+                                              UI.user_error!("version: maximum characters allowed: 21") unless value.length <= 21
+                                            end),
 
           FastlaneCore::ConfigItem.new(key: :version_notes,
                                   env_name: "APPERIAN_VERSION_NOTES",
                                description: "Version notes",
                                   optional: false,
-                                      type: String)
+                                      type: String,
+                              verify_block: proc do |value|
+                                              UI.user_error!("No version notes given, pass using `version_notes: 'New version available'`") unless value and !value.empty?
+                                              UI.user_error!("version_notes: maximum characters allowed: 1500") unless value.length <= 1500
+                                            end)
         ]
       end
 
